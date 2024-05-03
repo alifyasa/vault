@@ -3,6 +3,41 @@ import subprocess
 import argparse
 
 
+def main():
+    """
+    Main function to run the CLI using argparse.
+    """
+
+    parser = argparse.ArgumentParser(description="Encrypt and decrypt files with GPG.")
+    mutex_group = parser.add_mutually_exclusive_group(required=True)
+    mutex_group.add_argument(
+        "-e", "--encrypt", type=str, metavar="FILE", help="Encrypt the file."
+    )
+    mutex_group.add_argument(
+        "-d",
+        "--decrypt",
+        type=str,
+        metavar="FILE",
+        help="Decrypt the file.",
+    )
+    mutex_group.add_argument(
+        "--clean",
+        action="store_true",
+        help="Clean Vault. Delete all files untracked by git.",
+    )
+
+    args = parser.parse_args()
+
+    if args.encrypt:
+        encrypt_file(args.encrypt)
+    elif args.decrypt:
+        decrypt_file(args.decrypt)
+    elif args.clean:
+        clean_vault()
+    else:
+        parser.print_help()
+
+
 def encrypt_file(file_path):
     """
     Encrypt a file with GPG.
@@ -53,31 +88,14 @@ def decrypt_file(file_path):
         print(f"Decryption failed: {e}")
 
 
-def main():
+def clean_vault():
     """
-    Main function to run the CLI using argparse.
+    Delete all files that are not tracked by git.
     """
-
-    parser = argparse.ArgumentParser(description="Encrypt and decrypt files with GPG.")
-    parser.add_argument("file", type=str, help="File to encrypt or decrypt.")
-
-    group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument("-e", "--encrypt", action="store_true", help="Encrypt the file.")
-    group.add_argument(
-        "-d",
-        "--decrypt",
-        action="store_true",
-        help="Decrypt the file.",
-    )
-
-    args = parser.parse_args()
-
-    if args.encrypt:
-        encrypt_file(args.file)
-    elif args.decrypt:
-        decrypt_file(args.file)
-    else:
-        parser.print_help()
+    try:
+        subprocess.run(["git", "clean", "-f", "-d", "-x"])
+    except subprocess.CalledProcessError as e:
+        print(f"Failed cleaning Vault: {e}")
 
 
 if __name__ == "__main__":
