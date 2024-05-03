@@ -3,7 +3,9 @@
 !LICENSE
 !README.md
 !.gitignore
+
 !main.py
+!housekeep.sh
 
 !*/
 !encrypted-*
