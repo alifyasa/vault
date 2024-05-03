@@ -1,0 +1,10 @@
+*
+
+!LICENSE
+!.README.md
+!.gitignore
+!main.py
+
+!*/
+!encrypted-*
+!public-*
